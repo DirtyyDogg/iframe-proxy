@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Socket.IO chat</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <h1>FRAME PAGE</h1>
+  <ul id="messages">
+
+  </ul>
+  <button type="button" class="btn btn-default">
+    Run remote function1
+  </button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+  <script>
+    $(function() {
+      var hash = window.location.hash;
+      var socketId;
+      var socket = io('http://localhost:3000');
+
+      socket.on('storeClientInfo', function(msg) {
+        socketId = msg;
+      });
+
+      socket.on('runFunction', function(msg) {
+        var params = JSON.parse(msg);
+        console.log(msg);
+
+        try {
+          if (socketId != params.client && hash == params.hash) {
+            $('#messages').append($('<li>').text(msg));
+            eval(params.functionName)(params.args[0], params.args[1]);
+          }
+        } catch (e) {
+          console.log("Problems to run: " + params.functionName);
+        } finally {
+
+        }
+
+      });
+
+      $("button").click(function(){
+        var params = {
+          client: socketId,
+          hash: hash,
+          functionName: "function1",
+          args: ["parm1","parm2"]
+        };
+        socket.emit('runFunction', JSON.stringify(params));
+        return false;
+      });
+
+
+      function function1(arg0, arg1){
+        $('#messages').append($('<li>').text("function 1 executed"));
+      }
+    });
+  </script>
+</body>
+
+</html>
