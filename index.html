@@ -13,7 +13,7 @@
 
     </ul>
     <button type="button" class="btn btn-default">
-      Run function1
+      Run remote Function
     </button>
   </div>
 
@@ -25,40 +25,7 @@
   <script src="frameproxy.js"></script>
   <script>
     $(function() {
-      /*
-      var socketId;
-      var hash = ID();
-      $("iframe").attr("src", $("iframe").attr("src") + hash);
-      var socket = io('http://localhost:3000');
 
-      function ID() {
-        // Math.random should be unique because of its seeding algorithm.
-        // Convert it to base 36 (numbers + letters), and grab the first 9 characters
-        // after the decimal.
-        return '#' + Math.random().toString(36).substr(2, 9);
-      };
-
-      socket.on('storeClientInfo', function(msg) {
-        socketId = msg;
-      });
-
-      socket.on('runFunction', function(msg) {
-        var params = JSON.parse(msg);
-        console.log(msg);
-
-        try {
-          if (socketId != params.client && hash == params.hash) {
-            $('#messages').append($('<li>').text(msg));
-            eval(params.functionName)(params.args[0], params.args[1]);
-          }
-        } catch (e) {
-          console.log("Problems to run: " + params.functionName);
-        } finally {
-
-        }
-
-      });
-      */
       function functionOnHost(arg0, arg1) {
         $('#messages').append($('<li>').text("functionOnHost executed params: " + arg0  + " - " + arg1 ));
       }
