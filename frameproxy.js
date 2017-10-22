@@ -12,13 +12,18 @@
 
   }
 
-  var start = function(url, iframeName) {
+  var start = function(url, iframeId) {
 
-    if(!iframeName){
+    if (!iframeId) {
       hash = window.location.hash;
-    }else{
+    } else {
       hash = id();
-      $("iframe").attr("src", $("iframe").attr("src") + hash);
+
+      if ($("#" + iframeId).length > 0) {
+        $("#" + iframeId).attr("src", $("#" + iframeId).attr("src") + hash);
+      } else {
+        $("iframe").attr("src", $("iframe").attr("src") + hash);
+      }
     }
 
     socket = io(url);
@@ -36,7 +41,7 @@
           $('#messages').append($('<li>').text(msg));
 
           //eval(params.functionName)(params.args[0], params.args[1]);
-          if(Array.isArray(params.args))
+          if (Array.isArray(params.args))
             functions[params.functionName].apply(null, params.args);
           else {
             functions[params.functionName](params.args);
@@ -65,8 +70,8 @@
   }
 
   var frameproxy = {
-    start: function(url, iframeName) {
-      return start(url, iframeName);
+    start: function(url, iframeId) {
+      return start(url, iframeId);
     },
 
     runRemoteFunction: function(functionName, args) {

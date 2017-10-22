@@ -17,24 +17,24 @@
     </button>
   </div>
 
-  <iframe src="http://localhost:3000/framepage.html" style="width:500px; height:500px">
+  <iframe id="myIframe" src="http://localhost:3000/framepage.html" style="width:500px; height:500px">
     </iframe>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
-  <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.js"></script>
   <script src="frameproxy.js"></script>
   <script>
     $(function() {
 
       function functionOnHost(arg0, arg1) {
-        $('#messages').append($('<li>').text("functionOnHost executed params: " + arg0  + " - " + arg1 ));
+        $('#messages').append($('<li>').text("functionOnHost executed params: " + arg0 + " - " + arg1));
       }
 
       frameproxy.subscribeLocalFunction(functionOnHost);
-      frameproxy.start('http://localhost:3000', "iframe");
+      frameproxy.start('http://localhost:3000', "myIframe");
 
       $("button").click(function() {
-        frameproxy.runRemoteFunction("functionOnFrame", ["Hola","manola"])
+        frameproxy.runRemoteFunction("functionOnFrame", ["Hola", "manola"])
         return false;
       });
 
