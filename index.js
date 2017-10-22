@@ -1,28 +1,15 @@
-var app = require('express')();
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
+var path = require('path');
 var io = require('socket.io')(http);
 var port = process.env.PORT || 3000;
 
-
-app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
-});
-
-app.get('/framepage.html', function(req, res){
-  res.sendFile(__dirname + '/framepage.html');
-});
-
-app.get('/style.css', function(req, res){
-  res.sendFile(__dirname + '/style.css');
-});
-
-app.get('/frameproxy.js', function(req, res){
-  res.sendFile(__dirname + '/frameproxy.js');
-});
-
+app.use(express.static(__dirname));
 
 io.on('connection', function(socket){
-  console.log("connection client:" + socket.id);
+  console.log('New connection from ' + socket.id + "-- " + socket.request.connection.remoteAddress);
+
   socket.emit('storeClientInfo', socket.id);
 
   socket.on('runFunction', function(msg){
