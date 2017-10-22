@@ -22,8 +22,10 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
   <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+  <script src="frameproxy.js"></script>
   <script>
     $(function() {
+      /*
       var socketId;
       var hash = ID();
       $("iframe").attr("src", $("iframe").attr("src") + hash);
@@ -56,22 +58,19 @@
         }
 
       });
+      */
+      function functionOnHost(arg0, arg1) {
+        $('#messages').append($('<li>').text("functionOnHost executed params: " + arg0  + " - " + arg1 ));
+      }
+
+      frameproxy.subscribeLocalFunction(functionOnHost);
+      frameproxy.start('http://localhost:3000', "iframe");
 
       $("button").click(function() {
-        var params = {
-          client: socketId,
-          hash: hash,
-          functionName: "function1",
-          args: ["parm1", "parm2"]
-        };
-        socket.emit('runFunction', JSON.stringify(params));
+        frameproxy.runRemoteFunction("functionOnFrame", ["Hola","manola"])
         return false;
       });
 
-
-      function function1(arg0, arg1) {
-        $('#messages').append($('<li>').text("function 1 executed"));
-      }
     });
   </script>
 </body>
