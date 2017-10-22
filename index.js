@@ -16,6 +16,11 @@ io.on('connection', function(socket){
     console.log("runFunction: " + msg);
     io.emit('runFunction', msg);
   });
+
+  socket.on('callback', function(msg){
+    console.log("callback: " + msg);
+    io.emit('callback', msg);
+  });
 });
 
 http.listen(port, function(){

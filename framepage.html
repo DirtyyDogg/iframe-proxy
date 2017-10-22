@@ -25,7 +25,14 @@
         $('#messages').append($('<li>').text("functionOnFrame executed params: " + arg0 + " - " + arg1));
       }
 
+      function functionOnFrameRTN(arg0, arg1) {
+        var rtn = "true";
+        $('#messages').append($('<li>').text("functionOnFrame With return value executed params: " + arg0 + " - " + arg1 + " return: " + rtn));
+        return rtn;
+      }
+
       frameproxy.subscribeLocalFunction(functionOnFrame);
+      frameproxy.subscribeLocalFunction(functionOnFrameRTN);
       frameproxy.start('http://localhost:3000');
 
       $("button").click(function() {

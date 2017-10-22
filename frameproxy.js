@@ -3,6 +3,8 @@
   var hash;
   var socket = io('http://localhost:3000');
   var functions = {};
+  var calls = {};
+  var logEnable = false;
 
   var id = function() {
     // Math.random should be unique because of its seeding algorithm.
@@ -12,8 +14,21 @@
 
   }
 
-  var start = function(url, iframeId) {
+  var logMessage = function(msg) {
+    if(logEnable){
+      if ($('#messages').length > 0) {
+        $('#messages').append($('<li>').text(msg));
+      }
+    }
+  }
 
+  var logConsoleMessage = function(msg) {
+    if(logEnable){
+      console.log(msg);
+    }
+  }
+
+  var start = function(url, iframeId, enableLogging) {
     if (!iframeId) {
       hash = window.location.hash;
     } else {
@@ -26,29 +41,62 @@
       }
     }
 
+    if(enableLogging){
+      logEnable = true;
+    }
+
+
     socket = io(url);
 
     socket.on('storeClientInfo', function(msg) {
       socketId = msg;
     });
 
+    socket.on('callback', function(msg) {
+      var params = JSON.parse(msg);
+
+      try {
+        logMessage(msg);
+
+        if (Array.isArray(params.value))
+          calls[params.callbackId].apply(null, params.value);
+        else {
+          calls[params.callbackId](params.value);
+        }
+      } catch (e) {
+
+      } finally {
+        delete calls["params.callbackId"];
+      }
+    });
+
     socket.on('runFunction', function(msg) {
       var params = JSON.parse(msg);
-      console.log(msg);
+      logConsoleMessage(msg);
 
       try {
         if (socketId != params.client && hash == params.hash) {
-          $('#messages').append($('<li>').text(msg));
+          logMessage(msg);
 
           //eval(params.functionName)(params.args[0], params.args[1]);
+          var rtn;
           if (Array.isArray(params.args))
-            functions[params.functionName].apply(null, params.args);
+            rtn = functions[params.functionName].apply(null, params.args);
           else {
-            functions[params.functionName](params.args);
+            rtn = functions[params.functionName](params.args);
           }
+
+          if (params.callbackId) {
+            var rtnParams = {
+              callbackId: params.callbackId,
+              value: rtn
+            };
+            socket.emit('callback', JSON.stringify(rtnParams));
+          }
+
         }
       } catch (e) {
-        console.log("Problems to run: " + params.functionName + "error:" + e);
+        logConsoleMessage("Problems to run: " + params.functionName + "error:" + e);
       } finally {
 
       }
@@ -59,23 +107,29 @@
     functions[fn.name] = fn;
   }
 
-  var runRemoteFunction = function(functionName, args) {
+  var runRemoteFunction = function(functionName, args, callback) {
     var params = {
       client: socketId,
       hash: hash,
       functionName: functionName,
       args: args
     };
+
+    if (callback) {
+      params.callbackId = id();
+      calls[params.callbackId] = callback;
+    }
+
     socket.emit('runFunction', JSON.stringify(params));
   }
 
   var frameproxy = {
-    start: function(url, iframeId) {
-      return start(url, iframeId);
+    start: function(url, iframeId, enableLogging) {
+      return start(url, iframeId, enableLogging);
     },
 
-    runRemoteFunction: function(functionName, args) {
-      return runRemoteFunction(functionName, args);
+    runRemoteFunction: function(functionName, args, callback) {
+      return runRemoteFunction(functionName, args, callback);
     },
 
     subscribeLocalFunction: function(fn) {

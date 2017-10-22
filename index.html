@@ -12,8 +12,11 @@
     <ul id="messages">
 
     </ul>
-    <button type="button" class="btn btn-default">
+    <button id="btn1" type="button" class="btn btn-default">
       Run remote Function
+    </button>
+    <button id="btn2" type="button" class="btn btn-default">
+      Run remote Function with callback
     </button>
   </div>
 
@@ -31,10 +34,16 @@
       }
 
       frameproxy.subscribeLocalFunction(functionOnHost);
-      frameproxy.start('http://localhost:3000', "myIframe");
+      frameproxy.start('http://localhost:3000', "myIframe", false);
 
-      $("button").click(function() {
-        frameproxy.runRemoteFunction("functionOnFrame", ["Hola", "manola"])
+      $("#btn1").click(function() {
+        frameproxy.runRemoteFunction("functionOnFrame", ["Hola", "manola"]);
+      });
+
+      $("#btn2").click(function() {
+        frameproxy.runRemoteFunction("functionOnFrameRTN", ["Hola", "manola"], function(retorno){
+          $('#messages').append($('<li>').text("functionOnFrameRTN callback value: " + retorno));
+        });
         return false;
       });
 
