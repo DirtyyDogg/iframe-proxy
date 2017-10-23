@@ -16,9 +16,11 @@
 
   var logMessage = function(msg) {
     if(logEnable){
+      /*
       if ($('#messages').length > 0) {
         $('#messages').append($('<li>').text(msg));
       }
+      */
     }
   }
 
@@ -53,7 +55,8 @@
     });
 
     socket.on('callback', function(msg) {
-      var params = JSON.parse(msg);
+      //var params = JSON.parse(msg);
+      var params = msg;
 
       try {
         logMessage(msg);
@@ -71,7 +74,8 @@
     });
 
     socket.on('runFunction', function(msg) {
-      var params = JSON.parse(msg);
+      //var params = JSON.parse(msg);
+      var params = msg;
       logConsoleMessage(msg);
 
       try {
@@ -91,7 +95,8 @@
               callbackId: params.callbackId,
               value: rtn
             };
-            socket.emit('callback', JSON.stringify(rtnParams));
+            //socket.emit('callback', JSON.stringify(rtnParams));
+            socket.emit('callback', rtnParams);
           }
 
         }
@@ -120,7 +125,8 @@
       calls[params.callbackId] = callback;
     }
 
-    socket.emit('runFunction', JSON.stringify(params));
+    //socket.emit('runFunction', JSON.stringify(params));
+    socket.emit("runFunction", params);
   }
 
   var frameproxy = {
