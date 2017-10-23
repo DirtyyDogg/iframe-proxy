@@ -33,7 +33,7 @@
 
       frameproxy.subscribeLocalFunction(functionOnFrame);
       frameproxy.subscribeLocalFunction(functionOnFrameRTN);
-      frameproxy.start('http://localhost:3000');
+      frameproxy.start('http://localhost:3000', null, true);
 
       $("button").click(function() {
         frameproxy.runRemoteFunction("functionOnHost", "Hola");

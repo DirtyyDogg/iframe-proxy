@@ -13,15 +13,23 @@ io.on('connection', function(socket){
 
   socket.emit('storeClientInfo', socket.id);
 
+  socket.on('room', function(room) {
+    socket.join(room);
+    console.log("joined room: " + room);
+  });
+  
   socket.on('runFunction', function(msg){
     console.log("runFunction: " + JSON.stringify(msg));
-    io.emit('runFunction', msg);
+    io.sockets.in(msg.hash).emit('runFunction', msg);
+    //io.emit('runFunction', msg);
   });
 
   socket.on('callback', function(msg){
     console.log("callback: " + JSON.stringify(msg));
-    io.emit('callback', msg);
+    io.sockets.in(msg.hash).emit('callback', msg);
+    //io.emit('callback', msg);
   });
+  
 });
 
 http.listen(port, function(){

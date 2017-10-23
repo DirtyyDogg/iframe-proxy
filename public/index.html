@@ -34,7 +34,7 @@
       }
 
       frameproxy.subscribeLocalFunction(functionOnHost);
-      frameproxy.start('http://localhost:3000', "myIframe", false);
+      frameproxy.start('http://localhost:3000', "myIframe", true);
 
       $("#btn1").click(function() {
         frameproxy.runRemoteFunction("functionOnFrame", ["Hola", "manola"]);

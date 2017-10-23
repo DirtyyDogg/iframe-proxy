@@ -14,16 +14,6 @@
 
   }
 
-  var logMessage = function(msg) {
-    if(logEnable){
-      /*
-      if ($('#messages').length > 0) {
-        $('#messages').append($('<li>').text(msg));
-      }
-      */
-    }
-  }
-
   var logConsoleMessage = function(msg) {
     if(logEnable){
       console.log(msg);
@@ -47,8 +37,11 @@
       logEnable = true;
     }
 
-
     socket = io(url);
+
+    socket.on('connect', function() {
+      socket.emit("room", hash);
+    });    
 
     socket.on('storeClientInfo', function(msg) {
       socketId = msg;
@@ -57,17 +50,16 @@
     socket.on('callback', function(msg) {
       //var params = JSON.parse(msg);
       var params = msg;
+      logConsoleMessage(JSON.stringify(msg));
 
       try {
-        logMessage(msg);
-
         if (Array.isArray(params.value))
           calls[params.callbackId].apply(null, params.value);
         else {
           calls[params.callbackId](params.value);
         }
       } catch (e) {
-
+        logConsoleMessage(e);
       } finally {
         delete calls["params.callbackId"];
       }
@@ -76,13 +68,12 @@
     socket.on('runFunction', function(msg) {
       //var params = JSON.parse(msg);
       var params = msg;
-      logConsoleMessage(msg);
+      logConsoleMessage(JSON.stringify(msg));
 
       try {
-        if (socketId != params.client && hash == params.hash) {
-          logMessage(msg);
 
-          //eval(params.functionName)(params.args[0], params.args[1]);
+        // Si no soy yo
+        if (socketId != params.client) {
           var rtn;
           if (Array.isArray(params.args))
             rtn = functions[params.functionName].apply(null, params.args);
@@ -92,10 +83,10 @@
 
           if (params.callbackId) {
             var rtnParams = {
+              hash: hash,
               callbackId: params.callbackId,
               value: rtn
             };
-            //socket.emit('callback', JSON.stringify(rtnParams));
             socket.emit('callback', rtnParams);
           }
 
@@ -125,7 +116,6 @@
       calls[params.callbackId] = callback;
     }
 
-    //socket.emit('runFunction', JSON.stringify(params));
     socket.emit("runFunction", params);
   }
 
