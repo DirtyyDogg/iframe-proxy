@@ -1,7 +1,7 @@
 (function(window) {
   var socketId;
   var hash;
-  var socket = io('http://localhost:3000');
+  var socket;
   var functions = {};
   var calls = {};
   var logEnable = false;
