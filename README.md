@@ -1,83 +1,67 @@
 # FRAMEPROXY
 
-Frameproxy is a proxy application for solving cross-origin frame policies. The idea of the project is to use a nodejs websocket server to bypass the calls between the host html and the iframe.
+Frameproxy is a proxy application for solving cross-origin frame policies. The idea of the project is to use a nodejs websocket server to bypass the js calls between the host html and the iframe.
 
-### Prerequisites
+### Features
+- Call remote functions on iframe/host  avoid same origin policy.
+- Add parameters and callbacks.
+- Link host with iframe by hashtag.
 
-What things you need to install the software and how to install them
+### Dependencies
 
+#### Client
 ```
-Give examples
+  <script src="socket.io/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.js"></script>
 ```
+
+#### Server
+
+    "dependencies": {
+        "express": "^4.16.2",
+        "socket.io": "^2.0.3"
+      }
 
 ### Installing
 
-A step by step series of examples that tell you have to get a development env running
-
-Say what the step will be
+Get dependencies:
 
 ```
-Give the example
+npm install
 ```
 
-And repeat
+## Getting started
 
-```
-until finished
-```
+### Code on Host
+Add frameproxy.js reference to html
 
-End with an example of getting some data out of the system or using it for a little demo
+    <script src="lib/frameproxy.js"></script>
 
-## Running the tests
+Create a local function and register it
 
-Explain how to run the automated tests for this system
+    function functionOnHost(arg0, arg1) {
+            $('#messages').append($('<li>').text("functionOnHost executed params: " + arg0 + " - " + arg1));
+          }
+          frameproxy.subscribeLocalFunction(functionOnHost);
 
-### Break down into end to end tests
+When frameproxy is started, remote registered client can call the function.
 
-Explain what these tests test and why
+Connect to node.js through socket.io adding iframe id to the parameters:
 
-```
-Give an example
-```
+    frameproxy.start('http://localhost:3000', "myIframe", true);
 
-### And coding style tests
+### Code on iframe
 
-Explain what these tests test and why
+Connect to node.js and call previous registered function on host:
 
-```
-Give an example
-```
+    frameproxy.start('http://localhost:3000', null, true);
+    frameproxy.runRemoteFunction("functionOnHost", "Hola");
 
-## Deployment
+Full example on repository.
 
-Add additional notes about how to deploy this on a live system
-
-## Built With
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+### Running
+    npm start
 
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* Hat tip to anyone who's code was used
-* Inspiration
-* etc
+* **Javier colombera** - *Initial work* - [javis86](https://gitlab.com/javis86)
